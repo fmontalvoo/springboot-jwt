@@ -9,7 +9,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.fmontalvoo.springboot.jwt.app.auth.JWTAuthenticationFilter;
+import com.fmontalvoo.springboot.jwt.app.auth.service.JwtService;
+import com.fmontalvoo.springboot.jwt.app.auth.token.JWTAuthenticationFilter;
+import com.fmontalvoo.springboot.jwt.app.auth.token.JWTAuthorizationFilter;
 import com.fmontalvoo.springboot.jwt.app.services.JpaUserDetailsService;
 
 @Configuration
@@ -18,6 +20,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
 //	@Autowired
 //	private DataSource dataSource;
+
+	@Autowired
+	private JwtService jwtService;
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -34,7 +39,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				 * .and().formLogin().loginPage("/login").permitAll( )
 				 * .and().logout().permitAll().
 				 */
-				.and().addFilter(new JWTAuthenticationFilter(authenticationManager())).csrf().disable()
+				.and().addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtService))
+				.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtService)).csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 

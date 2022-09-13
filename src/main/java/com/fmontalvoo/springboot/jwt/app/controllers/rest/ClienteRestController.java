@@ -3,6 +3,7 @@ package com.fmontalvoo.springboot.jwt.app.controllers.rest;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ public class ClienteRestController {
 	@Autowired
 	private IClienteService cs;
 
+	@Secured("ROLE_ADMIN")
 	@GetMapping("/list")
 	public List<Cliente> listarRest() {
 		return cs.findAll();

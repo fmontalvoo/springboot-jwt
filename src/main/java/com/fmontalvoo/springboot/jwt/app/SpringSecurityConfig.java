@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.fmontalvoo.springboot.jwt.app.auth.JWTAuthenticationFilter;
 import com.fmontalvoo.springboot.jwt.app.services.JpaUserDetailsService;
 
 @Configuration
@@ -33,7 +34,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				 * .and().formLogin().loginPage("/login").permitAll( )
 				 * .and().logout().permitAll().
 				 */
-				.and().csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+				.and().addFilter(new JWTAuthenticationFilter(authenticationManager())).csrf().disable()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
 	@Autowired

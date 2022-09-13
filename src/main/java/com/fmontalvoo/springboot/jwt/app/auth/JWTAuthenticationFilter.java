@@ -23,7 +23,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fmontalvoo.springboot.jwt.app.entities.Usuario;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -51,6 +54,21 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		String password = obtainPassword(request);
 		password = (password != null) ? password : "";
 
+		if (username.isBlank() && password.isBlank()) {
+			Usuario usuario = null;
+			try {
+				usuario = new ObjectMapper().readValue(request.getInputStream(), Usuario.class);
+				username = usuario.getUsername();
+				password = usuario.getPassword();
+			} catch (StreamReadException e) {
+				e.printStackTrace();
+			} catch (DatabindException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
 
 		return this.authenticationManager.authenticate(authRequest);
@@ -69,9 +87,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		Claims claims = Jwts.claims();
 		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
 
-		String token = Jwts.builder().setSubject(user.getUsername()).setClaims(
-				claims).signWith(SECRET_KEY).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + 3600000L * 4)).compact();
+		String token = Jwts.builder().setSubject(user.getUsername()).setClaims(claims).signWith(SECRET_KEY)
+				.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + 3600000L * 4)).compact();
 
 		response.addHeader("Authorization", String.format("Bearer %s", token));
 

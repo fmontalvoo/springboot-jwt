@@ -2,6 +2,8 @@ package com.fmontalvoo.springboot.jwt.app.auth;
 
 import java.io.IOException;
 import java.security.Key;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,12 +18,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -60,7 +64,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
 		User user = (User) authResult.getPrincipal();
 
-		String token = Jwts.builder().setSubject(user.getUsername()).signWith(SECRET_KEY).compact();
+		Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+
+		Claims claims = Jwts.claims();
+		claims.put("authorities", new ObjectMapper().writeValueAsString(roles));
+
+		String token = Jwts.builder().setSubject(user.getUsername()).setClaims(
+				claims).signWith(SECRET_KEY).setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + 3600000L * 4)).compact();
 
 		response.addHeader("Authorization", String.format("Bearer %s", token));
 

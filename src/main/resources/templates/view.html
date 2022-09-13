@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div
+				class="card-header"
+				th:text="${titulo}"
+			></div>
+			<div class="card-body">
+				<div class="row">
+					<div
+						th:if="${#strings.length(cliente.fotoUrl) > 0}"
+						class="col-md-2"
+					>
+						<img
+							class="img-thumbnail rounded float-left"
+							th:src="@{'/uploads/' + ${cliente.fotoUrl}}"
+							th:alt="${cliente.nombre}+' '+${cliente.apellido}"
+						/>
+					</div>
+					<div class="col-md-10">
+						<ul class="list-group">
+							<li class="list-group-item"><b>Nombre:</b> <span
+								th:text="${cliente.nombre}"
+							></span></li>
+							<li class="list-group-item"><b>Apellido:</b> <span
+								th:text="${cliente.apellido}"
+							></span></li>
+							<li class="list-group-item"><b>Email:</b> <span
+								th:text="${cliente.email}"
+							></span></li>
+							<li class="list-group-item"><b>Fecha de registro:</b> <span
+								th:text="${cliente.createdAt}"
+							></span></li>
+						</ul>
+					</div>
+				</div>
+				<div
+					th:if="${#lists.isEmpty(cliente.facturas)}"
+					class="alert alert-info mt-3"
+				>Este cliente no tiene facturas registradas</div>
+				<a
+					sec:authorize="hasRole('ROLE_ADMIN')"
+					class="btn btn-success mt-3"
+					th:href="@{'/factura/form/' + ${cliente.id}}"
+				>Crear factura</a>
+				<table
+					th:unless="${#lists.isEmpty(cliente.facturas)}"
+					class="table table-bordered table-striped mt-3"
+				>
+					<thead class="thead-inverse">
+						<tr>
+							<th>ID</th>
+							<th>Fecha</th>
+							<th>Descripcion</th>
+							<th>Total</th>
+							<th sec:authorize="hasRole('ROLE_ADMIN')">Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="factura : ${cliente.facturas}">
+							<td sec:authorize="hasRole('ROLE_USER')"><a
+								th:href="@{'/factura/view/' + ${factura.id}}"
+								th:text="${factura.id}"
+							></a></td>
+							<td th:text="${factura.createdAt}"></td>
+							<td th:text="${factura.descripcion}"></td>
+							<td th:text="${factura.total}"></td>
+							<td sec:authorize="hasRole('ROLE_ADMIN')"><a
+								class="btn btn-danger btn-xs mx-1"
+								th:href="@{/factura/delete/} + ${factura.id}"
+							>Eliminar</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+	<script type="text/javascript">
+		const btns = document.getElementsByClassName("btn-danger");
+
+		const botones = Array.from(btns);
+		
+		if(botones){			
+		botones.forEach(boton => {
+			boton.addEventListener("click", (evt) => {
+				if(!confirm('¿Esta seguro?')) evt.preventDefault();
+			});
+		});
+		}
+	</script>
+</body>
+</html>

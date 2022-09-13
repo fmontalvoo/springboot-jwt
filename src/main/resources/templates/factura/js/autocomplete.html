@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8" />
+<body>
+	<script
+		type="text/javascript"
+		th:fragment="javascript"
+	>
+		$(document).ready(function() {
+			$("#buscar").autocomplete({
+				source : function(request, response) {
+					$.ajax({
+						url : '/factura/buscar-productos/' + request.term,
+						dataType : 'json',
+						data : {
+							term : request.term
+						},
+						success : function(data) {
+							response($.map(data, function(item) {
+								return {
+									value : item.id,
+									label : item.nombre,
+									precio : item.precio
+								};
+							}));
+						}
+					});
+				},
+				select : function(event, ui) {
+					// $("#buscar").val(ui.item.label);
+					if (itemsHelper.hasProducto(ui.item.value)) {
+                        itemsHelper.incrementaCantidad(ui.item.value, ui.item.precio);
+                        return false;
+                    }
+
+                    let item = $("#plantillaItemsFactura").html();
+
+                    item = item.replace(/{ID}/g, ui.item.value);
+                    item = item.replace(/{NOMBRE}/g, ui.item.label);
+                    item = item.replace(/{PRECIO}/g, ui.item.precio);
+
+                    $("#cargarItemProductos tbody").append(item);
+                    itemsHelper.calcularSubTotal(ui.item.value, ui.item.precio, 1);
+
+                    return false;
+				}
+			});
+            $("form").submit(function () {
+                $("#plantillaItemsFactura").remove();
+                return;
+            });
+		});
+		
+
+		const itemsHelper = {
+				calcularSubTotal: function (id, precio, cantidad) {
+		        $("#sub_total_" + id).html((parseFloat(precio) * parseFloat(cantidad)).toFixed(2));
+		        this.calcularTotal();
+		    },
+		    hasProducto: function (id) {
+
+		        let resultado = false;
+
+		        $('input[name="item_id[]"]').each(function () {
+		            if (parseInt(id) == parseInt($(this).val())) {
+		                resultado = true;
+		            }
+		        });
+
+		        return resultado;
+		    },
+		    incrementaCantidad: function (id, precio) {
+		        let cantidad = $("#cantidad_" + id).val() 
+		        ? parseInt($("#cantidad_" + id).val()) : 0;
+		        $("#cantidad_" + id).val(++cantidad);
+		        this.calcularSubTotal(id, precio, cantidad);
+		    },
+		    eliminarItemFactura: function (id) {
+		        $("#row_" + id).remove();
+		        this.calcularTotal();
+		    },
+		    calcularTotal: function () {
+		        let total = 0;
+		        $('span[id^="sub_total_"]').each(function () {
+		            total += parseFloat($(this).html());
+		        });
+				console.log(total);
+		        $('#total').html(total.toFixed(2));
+		    }
+		}
+		
+	</script>
+</body>
+</html>

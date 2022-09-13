@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head">
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="container mt-5 mb-5">
+		<h2
+			class="text-center text-secondary border boder-success"
+			th:text="${titulo}"
+		></h2>
+		<!--<div
+			th:object="${cliente}"
+			th:remove="tag"
+		>
+			<ul
+				th:if="${#fields.hasErrors('*')}"
+				class="alert alert-danger"
+			>
+				<li
+					th:each="error : ${#fields.errors('*')}"
+					th:text="${error}"
+				></li>
+			</ul>
+		</div>-->
+		<form
+			th:action="@{/form}"
+			th:object="${cliente}"
+			method="post"
+			enctype="multipart/form-data"
+		>
+			<input
+				type="hidden"
+				th:field="*{id}"
+			/>
+			<div class="form-floating mb-3">
+				<input
+					type="text"
+					th:field="*{nombre}"
+					class="form-control"
+					th:errorclass="'alert-danger'"
+					id="nombre"
+					placeholder="Nombre"
+				/> <label for="nombre">Nombre</label> <small
+					class="text-danger"
+					th:if="${#fields.hasErrors('nombre')}"
+					th:errors="*{nombre}"
+				></small>
+			</div>
+			<div class="form-floating mb-3">
+				<input
+					type="text"
+					th:field="*{apellido}"
+					class="form-control"
+					th:errorclass="'alert-danger'"
+					id="apellido"
+					placeholder="Apellido"
+				/> <label for="apellido">Apellido</label> <small
+					class="text-danger"
+					th:if="${#fields.hasErrors('apellido')}"
+					th:errors="*{apellido}"
+				></small>
+			</div>
+			<div class="form-floating mb-3">
+				<input
+					type="text"
+					th:field="*{email}"
+					class="form-control"
+					th:errorclass="'alert-danger'"
+					id="email"
+					placeholder="Email"
+				/> <label for="email">Email</label> <small
+					class="text-danger"
+					th:if="${#fields.hasErrors('email')}"
+					th:errors="*{email}"
+				></small>
+			</div>
+			<div class="input-group">
+				<input
+					type="file"
+					name="file"
+					class="form-control"
+					id="foto"
+				/>
+				<!-- <small
+					class="text-danger"
+					th:if="${#fields.hasErrors('fotoUrl')}"
+					th:errors="*{fotoUrl}"
+				></small> -->
+			</div>
+			<div class="text-center col-12 mt-3">
+				<button
+					class="btn btn-lg btn-primary"
+					type="submit"
+				>Guardar</button>
+			</div>
+		</form>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

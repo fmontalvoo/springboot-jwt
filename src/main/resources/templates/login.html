@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head">
+</head>
+<link
+	th:href="@{/css/login.css}"
+	rel="stylesheet"
+/>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="signin text-center">
+		<main class="form-signin">
+			<form
+				autocomplete="off"
+				th:action="@{/login}"
+				method="post"
+			>
+				<h1 class="h3 mb-3 fw-normal">Iniciar sesi&oacute;n</h1>
+				<div class="form-floating">
+					<input
+						type="text"
+						name="username"
+						class="form-control"
+						id="txtUsername"
+						placeholder="Usuario"
+						required
+						autofocus
+					/> <label for="txtUsername">Usuario</label>
+				</div>
+				<div class="form-floating mt-4">
+					<input
+						type="password"
+						name="password"
+						class="form-control"
+						id="txtPass"
+						placeholder="Contrase&ntilde;a"
+						required
+					> <label for="txtPass">Contrase&ntilde;a</label>
+				</div>
+				<button
+					class="w-100 btn btn-success"
+					type="submit"
+				>Iniciar sesi&oacute;n</button>
+			</form>
+		</main>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+<head th:fragment="head">
+<meta charset="UTF-8" />
+<link
+	th:href="@{/css/bootstrap.min.css}"
+	rel="stylesheet"
+/>
+<link
+	th:href="@{/css/jquery-ui.min.css}"
+	rel="stylesheet"
+/>
+<title th:text="${titulo}"></title>
+</head>
+<body>
+	<header th:fragment="header">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container-fluid">
+				<a
+					class="navbar-brand"
+					href="#"
+				>SpringBoot</a>
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav"
+					aria-controls="navbarNav"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div
+					class="collapse navbar-collapse"
+					id="navbarNav"
+				>
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item"><a
+							class="nav-link active"
+							aria-current="page"
+							th:href="@{/list}"
+						>Clientes</a></li>
+					</ul>
+					<div class="d-inline d-flex">
+						<ul class="navbar-nav d-inline d-flex mx-3">
+							<li><a
+								class="btn btn-outline-primary mx-1"
+								th:href="@{/locale(lang=es_EC)}"
+							>ES</a></li>
+							<li><a
+								class="btn btn-outline-success mx-1"
+								th:href="@{/locale(lang=en_EN)}"
+							>EN</a></li>
+						</ul>
+						<!-- <button class="btn btn-outline-danger" (click)="logout()">
+                        Cerrar sesi&oacute;n
+                    </button> -->
+						<div
+							sec:authorize="isAuthenticated()"
+							class="nav-item dropdown"
+						>
+							<button
+								class="btn btn-secondary dropdown-toggle mx-2"
+								type="button"
+								id="dropdownMenuButton1"
+								data-bs-toggle="dropdown"
+								aria-expanded="false"
+							>
+								<b>Usuario: </b><span sec:authentication="name"></span>
+							</button>
+							<div
+								class="dropdown-menu"
+								aria-labelledby="dropdownMenuButton1"
+							>
+								<form
+									th:action="@{/logout}"
+									method="post"
+								>
+									<button
+										class="btn btn-xs dropdown-item"
+										type="submit"
+									>Cerrar sesi&oacute;n</button>
+								</form>
+							</div>
+						</div>
+						<a
+							sec:authorize="!isAuthenticated()"
+							class="btn btn-primary mx-2"
+							th:href="@{/login}"
+						>Iniciar sesi&oacute;n</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+		<div
+			class="alert alert-success"
+			th:if="${success != null}"
+			th:text="${success}"
+		></div>
+		<div
+			class="alert alert-info"
+			th:if="${info != null}"
+			th:text="${info}"
+		></div>
+		<div
+			class="alert alert-warning"
+			th:if="${warning != null}"
+			th:text="${warning}"
+		></div>
+		<div
+			class="alert alert-danger"
+			th:if="${error != null}"
+			th:text="${error}"
+		></div>
+	</header>
+	<div class="container"></div>
+	<footer
+		class="container"
+		th:fragment="footer"
+	>
+		<hr />
+		<img
+			th:src="@{/images/spring.png}"
+			alt="Spring logo"
+		/>
+		<div sec:authorize="isAuthenticated()">
+			<small> <b>Usuario: </b><span sec:authentication="name"></span>
+				| <b>Roles:</b> <span sec:authentication="principal.authorities"></span>
+			</small>
+		</div>
+		<p>
+			Powered by <a href="https://projects.spring.io/spring-boot/">Spring
+				Boot</a> y <a href="http://www.thymeleaf.org">Thymeleaf</a>.
+		</p>
+		<p>
+			Este proyecto fue desarrollado en IDE Eclipse + Spring Plugins (STS
+			Spring Tool).<br /> &copy; Company 2017, Inc. Todos los derechos
+			reservados. Términos de uso y privacidad.<br />
+		</p>
+		<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+		<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+		<script th:src="@{/js/jquery-ui.min.js}"></script>
+	</footer>
+</body>
+</html>
